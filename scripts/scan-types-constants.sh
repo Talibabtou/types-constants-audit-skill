@@ -14,9 +14,7 @@ if [ ! -d "$TARGET" ]; then
   exit 1
 fi
 
-RG_COMMON=(
-  --color never
-  --line-number
+FALLBACK_IGNORE_GLOBS=(
   --glob '!node_modules/**'
   --glob '!.git/**'
   --glob '!.next/**'
@@ -27,16 +25,31 @@ RG_COMMON=(
   --glob '!coverage/**'
 )
 
-RG_FILES_COMMON=(
-  --glob '!node_modules/**'
-  --glob '!.git/**'
-  --glob '!.next/**'
-  --glob '!.turbo/**'
-  --glob '!.vercel/**'
-  --glob '!dist/**'
-  --glob '!build/**'
-  --glob '!coverage/**'
+IGNORE_GLOBS=()
+IGNORE_SOURCE="repo ignore files"
+
+if command -v git >/dev/null 2>&1 && git -C "$TARGET" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  repo_root="$(git -C "$TARGET" rev-parse --show-toplevel 2>/dev/null || true)"
+  if [ -z "$repo_root" ] || [ ! -f "$repo_root/.gitignore" ]; then
+    IGNORE_GLOBS=("${FALLBACK_IGNORE_GLOBS[@]}")
+    IGNORE_SOURCE="fallback generated-folder globs"
+  fi
+elif [ ! -f "$TARGET/.gitignore" ]; then
+  IGNORE_GLOBS=("${FALLBACK_IGNORE_GLOBS[@]}")
+  IGNORE_SOURCE="fallback generated-folder globs"
+fi
+
+RG_COMMON=(
+  --color never
+  --line-number
 )
+
+RG_FILES_COMMON=()
+
+if [ "${#IGNORE_GLOBS[@]}" -gt 0 ]; then
+  RG_COMMON+=("${IGNORE_GLOBS[@]}")
+  RG_FILES_COMMON+=("${IGNORE_GLOBS[@]}")
+fi
 
 TS_GLOBS=(
   --glob '*.ts'
@@ -52,11 +65,16 @@ scan() {
 }
 
 files() {
-  rg --files "${RG_FILES_COMMON[@]}" "$TARGET" || true
+  if [ "${#RG_FILES_COMMON[@]}" -gt 0 ]; then
+    rg --files "${RG_FILES_COMMON[@]}" "$TARGET" || true
+  else
+    rg --files "$TARGET" || true
+  fi
 }
 
 section "Target"
 printf '%s\n' "$TARGET"
+printf 'ignore: %s\n' "$IGNORE_SOURCE"
 
 section "Repo shape"
 for path in \

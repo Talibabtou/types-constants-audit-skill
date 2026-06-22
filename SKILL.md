@@ -19,7 +19,7 @@ Use this skill to produce a repo-grounded audit report. Do not refactor unless t
 scripts/scan-types-constants.sh .
 ```
 
-When running manual searches, use the same noisy generated and dependency folder exclusions:
+When running manual searches, let `rg` honor the repo's `.gitignore` first. If the repo has no `.gitignore`, add fallback exclusions for common generated and dependency folders:
 
 ```bash
 --glob '!node_modules/**' --glob '!.git/**' --glob '!.next/**' --glob '!.turbo/**' --glob '!.vercel/**' --glob '!dist/**' --glob '!build/**' --glob '!coverage/**'

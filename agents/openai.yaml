@@ -1,0 +1,4 @@
+interface:
+  display_name: "Types & Constants Audit"
+  short_description: "Audit TypeScript type and constant organization."
+  default_prompt: "Audit this repo for duplicated types, scattered constants, magic literals, stale exports, and bad global/local placement."

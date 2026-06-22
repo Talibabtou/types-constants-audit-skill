@@ -13,7 +13,19 @@ Use this skill to produce a repo-grounded audit report. Do not refactor unless t
    - package manager and framework
    - `src/`, `app/`, `pages/`, `features/`, `domains/`, `packages/`
    - existing naming style for types, constants, enums, and barrels
-2. Find candidates with `rg`:
+2. Find candidates with `scripts/scan-types-constants.sh` when it exists, or with `rg` manually.
+
+```bash
+scripts/scan-types-constants.sh .
+```
+
+When running manual searches, use the same noisy generated and dependency folder exclusions:
+
+```bash
+--glob '!node_modules/**' --glob '!.git/**' --glob '!.next/**' --glob '!.turbo/**' --glob '!.vercel/**' --glob '!dist/**' --glob '!build/**' --glob '!coverage/**'
+```
+
+Manual candidate searches:
 
 ```bash
 rg --files | rg '(^|/)(types|constants|enums|status|statuses|roles|variants|config)\.(ts|tsx)$'

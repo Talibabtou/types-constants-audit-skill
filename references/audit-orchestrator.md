@@ -33,6 +33,11 @@ multi-audit -> TODO report -> human permission -> cleanup work
    - Reference: `references/react-next-habits.md`
    - Purpose: find server/client boundary drift, route config drift, fetch policy repetition, route literal repetition, and prop type placement leads.
 
+6. Tailwind cleanup
+   - Script: `scripts/scan-tailwind-cleanup.sh`
+   - Reference: `references/tailwind-cleanup.md`
+   - Purpose: find Tailwind source/config drift, dynamic class construction, repeated arbitrary values, long class lists, duplicate utilities, and token leads.
+
 ## Report Contract
 
 The final report must be a Markdown checklist that can be read by a human or another agent.

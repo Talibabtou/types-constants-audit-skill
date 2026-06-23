@@ -30,6 +30,9 @@ section "TypeScript Hygiene"
 section "React And Next.js Habits"
 "$ROOT/scripts/scan-react-next-habits.sh" "$TARGET"
 
+section "Tailwind Cleanup"
+"$ROOT/scripts/scan-tailwind-cleanup.sh" "$TARGET"
+
 cat <<'NOTE'
 
 # Notes

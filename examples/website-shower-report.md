@@ -4,7 +4,7 @@ Fixture report generated from read-only scanner output. No audited files were ch
 
 ## Summary
 
-- Total tasks: 10
+- Total tasks: 12
 - Safe first cleanup: `WS-004`
 - Needs human decision: `WS-003`, `WS-006`
 - Commands used:
@@ -159,6 +159,35 @@ MAX_SECTION_LINES=300 scripts/scan-website-shower.sh examples/fixture
   Check generated links and route tests, if the repo has them.
   Permission: required
 
+- [ ] WS-011 Replace dynamic Tailwind class construction
+  Module: tailwind-cleanup
+  Confidence: high
+  Files:
+  - `examples/fixture/src/components/MetricCard.tsx:8`
+  Why:
+  The component builds `bg-${tone}-600`, but Tailwind detects class names as plain text. This can drop required styles from generated CSS.
+  Safe action:
+  Replace interpolation with a static variant map, for example `{ blue: 'bg-blue-600', green: 'bg-green-600' }`.
+  Validation:
+  Run the app build or Tailwind build and inspect the component state that uses each variant.
+  Permission: required
+
+- [ ] WS-012 Promote repeated arbitrary values to Tailwind tokens
+  Module: tailwind-cleanup
+  Confidence: medium
+  Files:
+  - `examples/fixture/src/components/MetricCard.tsx:8`
+  - `examples/fixture/src/components/Panel.tsx:3`
+  - `examples/fixture/src/components/Panel.tsx:5`
+  - `examples/fixture/src/components/Panel.tsx:6`
+  Why:
+  `rounded-[18px]`, `border-[#d7dde8]`, and the shadow value repeat across UI components. These look like design tokens rather than local one-offs.
+  Safe action:
+  Add named Tailwind theme variables or config tokens, then replace repeated arbitrary values with named utilities.
+  Validation:
+  Run the formatter and visual smoke check for the affected components.
+  Permission: required
+
 ## Leads Ignored
 
 - `default` in `src/ui/control.ts` is a local UI variant, not a domain constant.
@@ -167,3 +196,4 @@ MAX_SECTION_LINES=300 scripts/scan-website-shower.sh examples/fixture
 - `readOptionalAmount` uses `unknown` safely because it narrows before returning a value.
 - Missing Biome, Prettier, and ESLint are one setup lead, not separate tasks. A repo should pick one formatter path and one lint path unless it has a reason to run more.
 - `metadata` in a single route file is normal. It becomes a task only when it is mixed with client behavior or repeated across routes without ownership.
+- One arbitrary value can stay inline. The report only promotes values that repeat or encode a shared visual decision.

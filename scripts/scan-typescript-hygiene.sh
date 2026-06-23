@@ -73,6 +73,18 @@ print_missing() {
   printf 'missing recommended guardrail: %s\n' "$1"
 }
 
+has_ts_source() {
+  rg --files "$TARGET" --glob '*.ts' --glob '*.tsx' --glob '!*.d.ts' --glob '!**/*.d.ts' 2>/dev/null |
+    head -n 1 |
+    rg --quiet '.'
+}
+
+has_js_source() {
+  rg --files "$TARGET" --glob '*.js' --glob '*.jsx' --glob '!**/node_modules/**' --glob '!**/dist/**' --glob '!**/build/**' 2>/dev/null |
+    head -n 1 |
+    rg --quiet '.'
+}
+
 section "Target"
 printf '%s\n' "$TARGET"
 
@@ -118,6 +130,21 @@ done
 section "Package checker scripts"
 if [ -f "$TARGET/package.json" ]; then
   rg --color never --line-number '"(lint|format|check|typecheck|type-check|biome|eslint|prettier|knip|fallow|ts-prune)"[[:space:]]*:' "$TARGET/package.json" 2>/dev/null | limit_output || true
+fi
+
+section "JavaScript to TypeScript migration leads"
+if has_js_source && ! has_ts_source; then
+  printf 'JavaScript source detected without TypeScript. Consider TypeScript migration when the repo has growing shared contracts, API boundaries, forms, workers, or long-lived domain logic.\n'
+  rg --color never --line-number \
+    --glob '*.js' \
+    --glob '*.jsx' \
+    --glob '!**/node_modules/**' \
+    --glob '!**/dist/**' \
+    --glob '!**/build/**' \
+    '(fetch\(|postMessage|module\.exports|export[[:space:]]+(const|function|class)|React|useState|useEffect)' \
+    "$TARGET" 2>/dev/null | limit_output || true
+else
+  printf 'No JS-only migration lead detected.\n'
 fi
 
 section "TypeScript config guardrails"

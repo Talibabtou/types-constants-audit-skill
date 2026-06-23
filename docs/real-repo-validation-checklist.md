@@ -65,6 +65,7 @@ scripts/scan-typescript-hygiene.sh /path/to/repo
 
 ### TypeScript Hygiene
 
+- [ ] If the repo is JS-only, does it suggest TypeScript only when there is real contract pressure?
 - [ ] Does it detect the repo's checker setup: Biome, ESLint, Prettier, oxlint, knip, or none?
 - [ ] Does it recommend missing `tsconfig` strictness only when it fits the repo?
 - [ ] If Biome exists, does it spot missing formatter, linter, `noExplicitAny`, `noDebugger`, `useConst`, unused-variable, and Tailwind class rules?
@@ -80,9 +81,17 @@ scripts/scan-typescript-hygiene.sh /path/to/repo
 - [ ] Does it find repeated fetch cache policies that should become a named convention?
 - [ ] Does it find route literals that cross navigation, redirects, fetch calls, and tests?
 
+### Tailwind Cleanup
+
+- [ ] If Tailwind is absent, does the module skip cleanly?
+- [ ] If CSS exists without Tailwind, does it suggest Tailwind only as an optional transition lead?
+- [ ] Does it detect Tailwind through package config, Tailwind config files, or CSS directives?
+- [ ] Does it find unclear source/content coverage in monorepos and app folders?
+- [ ] Does it flag dynamic class construction that Tailwind cannot detect reliably?
+- [ ] Does it surface repeated arbitrary values, duplicate utilities, and long class strings without treating every local class list as a finding?
+
 ### Future Modules
 
-- [ ] Tailwind cleanup: config drift, repeated arbitrary values, unused tokens, class duplication, shared component class soup.
 - [ ] API contracts: duplicated request/response shapes between routes, clients, hooks, schemas, and mocks.
 - [ ] State and domain contracts: duplicated store state, event payloads, selector return types, status machines, and action names.
 - [ ] Monorepo ownership: feature-private imports, premature shared packages, app-global junk drawers, and cross-package drift.

@@ -1,13 +1,13 @@
 ---
 name: types-constants-audit
-description: Audit website repos for TypeScript type and constant drift, unused-code leads, TypeScript escape hatches, React/Next.js habit drift, stale exports, and cleanup tasks. Use when asked for Website Shower, website maintenance audit, cleanup checklist, duplicated types/constants, magic values, unused code, TypeScript hygiene, React/Next habits, or read-only repo cleanup.
+description: Audit website repos for TypeScript type and constant drift, unused-code leads, TypeScript escape hatches, React/Next.js habit drift, Tailwind cleanup, stale exports, and cleanup tasks. Use when asked for Website Shower, website maintenance audit, cleanup checklist, duplicated types/constants, magic values, unused code, TypeScript hygiene, React/Next habits, Tailwind cleanup, or read-only repo cleanup.
 ---
 
 # Website Shower
 
 Audit website maintenance issues from repo evidence. Default mode is read-only: produce findings and recommendations, but do not edit files unless the user explicitly asks for fixes.
 
-Website Shower coordinates multiple read-only website maintenance audits into a Markdown TODO report. Current modules cover types/constants ownership, unused-code leads, TypeScript hygiene, and React/Next.js habits.
+Website Shower coordinates multiple read-only website maintenance audits into a Markdown TODO report. Current modules cover types/constants ownership, unused-code leads, TypeScript hygiene, React/Next.js habits, and Tailwind cleanup.
 
 ## Workflow
 
@@ -88,6 +88,14 @@ scripts/scan-react-next-habits.sh .
 
 Then apply `references/react-next-habits.md`.
 
+For Tailwind cleanup leads, use:
+
+```bash
+scripts/scan-tailwind-cleanup.sh .
+```
+
+Then apply `references/tailwind-cleanup.md`.
+
 ## Core Judgment
 
 - Global only after two unrelated features need it.
@@ -113,6 +121,7 @@ Prioritize findings that reduce confusion:
 - `any`, double casts, or suppression comments near repo-owned boundaries
 - JavaScript migration leftovers in typed source folders
 - React/Next server-client boundary drift, route literal drift, and repeated fetch policy
+- Tailwind source/config drift, dynamic class construction, repeated arbitrary values, and duplicate utilities
 
 Skip low-value noise:
 - one-off JSX labels, route segments, HTTP method strings, and framework syntax

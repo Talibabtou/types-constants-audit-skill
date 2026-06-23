@@ -25,6 +25,7 @@ The scanner reports leads for:
 - `@ts-ignore`, `@ts-expect-error`, and `@ts-nocheck`
 - JavaScript files under `src/` in otherwise typed repos
 - hand-written API-style request, response, payload, and DTO names
+- JS-to-TS migration leads when JavaScript source exists without TypeScript
 
 ## Checker Guardrails
 
@@ -95,6 +96,7 @@ Report these as setup leads, not mandatory edits. A small library, generated pac
 
 Strong signals:
 
+- JS-only repo has shared contracts, API boundaries, workers, forms, or long-lived domain logic
 - no checker config in a TypeScript website repo
 - a checker exists but misses the repo's own strict conventions
 - `package.json` has no repeatable script for typecheck or lint
@@ -107,6 +109,7 @@ Strong signals:
 
 Weak signals:
 
+- small JS-only site with little state, no shared contracts, and no build-time type pressure
 - a repo uses a different checker with equivalent rules
 - a rule is disabled in generated, vendored, or migration-only folders
 - isolated `unknown` that gets narrowed immediately
@@ -126,4 +129,4 @@ rg "@ts-ignore|@ts-expect-error|@ts-nocheck" <target>
 rg "as unknown as|as any|: any" <target>
 ```
 
-Report the smallest safe action. Good tasks remove one escape hatch, move one boundary type to its owner, or convert one migration leftover. If a type assertion is the only reasonable bridge to a third-party library, leave it alone and say why.
+Report the smallest safe action. Good tasks remove one escape hatch, move one boundary type to its owner, convert one migration leftover, or suggest TypeScript migration only when the repo has enough contract pressure to justify it. If a type assertion is the only reasonable bridge to a third-party library, leave it alone and say why.

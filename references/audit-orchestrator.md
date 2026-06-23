@@ -23,6 +23,11 @@ multi-audit -> TODO report -> human permission -> cleanup work
    - Script: `scripts/scan-website-shower.sh`
    - Purpose: run module scanners and collect read-only candidate evidence.
 
+4. TypeScript hygiene
+   - Script: `scripts/scan-typescript-hygiene.sh`
+   - Reference: `references/typescript-hygiene.md`
+   - Purpose: find typed-code escape hatches, migration leftovers, and duplicated API-style contracts.
+
 ## Report Contract
 
 The final report must be a Markdown checklist that can be read by a human or another agent.

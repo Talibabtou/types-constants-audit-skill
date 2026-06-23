@@ -4,7 +4,7 @@ Fixture report generated from read-only scanner output. No audited files were ch
 
 ## Summary
 
-- Total tasks: 6
+- Total tasks: 8
 - Safe first cleanup: `WS-004`
 - Needs human decision: `WS-003`, `WS-006`
 - Commands used:
@@ -102,8 +102,37 @@ MAX_SECTION_LINES=80 scripts/scan-website-shower.sh examples/fixture
   Check file ownership before editing.
   Permission: required
 
+- [ ] WS-007 Replace unsafe input escape hatch
+  Module: typescript-hygiene
+  Confidence: medium
+  Files:
+  - `examples/fixture/src/feature/unsafeInput.ts:6`
+  - `examples/fixture/src/feature/unsafeInput.ts:7`
+  Why:
+  `normalizeInput` accepts `any` and then double-casts through `unknown`, so the boundary looks typed before it is checked.
+  Safe action:
+  Replace the double cast with a small parser or guard that validates `itemId` and `amount`.
+  Validation:
+  Run typecheck and add the smallest unit test if this boundary handles external input.
+  Permission: required
+
+- [ ] WS-008 Add repeatable checker guardrails
+  Module: typescript-hygiene
+  Confidence: medium
+  Files:
+  - `examples/fixture/package.json:1`
+  Why:
+  The fixture has TypeScript source but no `tsconfig`, Biome, ESLint, lint script, or typecheck script. Real repos need repeatable checks before cleanup work can stay consistent.
+  Safe action:
+  Add the repo's chosen checker setup. For a TypeScript website this usually means strict `tsconfig`, one formatter path such as Biome or Prettier, one lint path such as Biome or ESLint, `typecheck`, `lint`, and optional dead-code checking.
+  Validation:
+  Run the new scripts once and record any rule that must stay disabled during migration.
+  Permission: required
+
 ## Leads Ignored
 
 - `default` in `src/ui/control.ts` is a local UI variant, not a domain constant.
 - `AppState` appears twice, but one version is store-derived. Store-derived state often wins over hand-written aliases.
 - Basic unused-code fallback output is weaker than `fallow`; every unused-code item needs a follow-up search before deletion.
+- `readOptionalAmount` uses `unknown` safely because it narrows before returning a value.
+- Missing Biome, Prettier, and ESLint are one setup lead, not separate tasks. A repo should pick one formatter path and one lint path unless it has a reason to run more.

@@ -5,12 +5,14 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 OUTPUT="$(mktemp "${TMPDIR:-/tmp}/types-constants-smoke.XXXXXX")"
 UNUSED_OUTPUT="$(mktemp "${TMPDIR:-/tmp}/website-shower-unused-smoke.XXXXXX")"
+TS_OUTPUT="$(mktemp "${TMPDIR:-/tmp}/website-shower-ts-smoke.XXXXXX")"
 SHOWER_OUTPUT="$(mktemp "${TMPDIR:-/tmp}/website-shower-smoke.XXXXXX")"
 REPORT="$ROOT/examples/website-shower-report.md"
-trap 'rm -f "$OUTPUT" "$UNUSED_OUTPUT" "$SHOWER_OUTPUT"' EXIT
+trap 'rm -f "$OUTPUT" "$UNUSED_OUTPUT" "$TS_OUTPUT" "$SHOWER_OUTPUT"' EXIT
 
 "$ROOT/scripts/scan-types-constants.sh" "$ROOT/examples/fixture" > "$OUTPUT"
 "$ROOT/scripts/scan-unused-code.sh" "$ROOT/examples/fixture" > "$UNUSED_OUTPUT"
+"$ROOT/scripts/scan-typescript-hygiene.sh" "$ROOT/examples/fixture" > "$TS_OUTPUT"
 MAX_SECTION_LINES=10 "$ROOT/scripts/scan-website-shower.sh" "$ROOT/examples/fixture" > "$SHOWER_OUTPUT"
 
 assert_contains() {
@@ -68,15 +70,31 @@ else
   assert_contains "== Fallow dead-code ==" "$UNUSED_OUTPUT"
 fi
 
+assert_contains "== Any and unknown pressure ==" "$TS_OUTPUT"
+assert_contains "== Checker config files ==" "$TS_OUTPUT"
+assert_contains "== TypeScript config guardrails ==" "$TS_OUTPUT"
+assert_contains "missing recommended guardrail: tsconfig.json" "$TS_OUTPUT"
+assert_contains "missing recommended guardrail: Biome or ESLint config" "$TS_OUTPUT"
+assert_contains "missing recommended guardrail: Prettier or Biome formatter config" "$TS_OUTPUT"
+assert_contains "== Other checker leads ==" "$TS_OUTPUT"
+assert_contains "unsafeInput.ts" "$TS_OUTPUT"
+assert_contains ": any" "$TS_OUTPUT"
+assert_contains "as unknown as" "$TS_OUTPUT"
+assert_contains "== JavaScript files in typed source ==" "$TS_OUTPUT"
+assert_contains "legacyWidget.js" "$TS_OUTPUT"
+
 assert_contains "# Website Shower Candidate Scan" "$SHOWER_OUTPUT"
 assert_contains "# Types And Constants" "$SHOWER_OUTPUT"
 assert_contains "# Unused Code" "$SHOWER_OUTPUT"
+assert_contains "# TypeScript Hygiene" "$SHOWER_OUTPUT"
 assert_contains "This orchestrator gathers module outputs only." "$SHOWER_OUTPUT"
 
 assert_contains "# Website Shower Report" "$REPORT"
 assert_contains "WS-001 Deduplicate" "$REPORT"
 assert_contains "WS-003 Consolidate preview worker messages" "$REPORT"
 assert_contains "WS-004 Remove stale env helpers" "$REPORT"
+assert_contains "WS-007 Replace unsafe input escape hatch" "$REPORT"
+assert_contains "WS-008 Add repeatable checker guardrails" "$REPORT"
 assert_contains "No audited files were changed." "$REPORT"
 
 echo "smoke test ok"

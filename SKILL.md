@@ -1,13 +1,13 @@
 ---
 name: types-constants-audit
-description: Audit and organize TypeScript type files, constant files, literal unions, enum-like objects, magic strings/numbers, and stale exports in web repos. Use when asked to audit types and constants, clean magic values, organize types.ts or constants.ts, decide whether a type or constant should be global, find duplicated enums/statuses/roles/kinds/variants, split junk-drawer files, or review shared vs feature-local placement.
+description: Audit website repos for TypeScript type and constant drift, unused-code leads, TypeScript escape hatches, stale exports, and cleanup tasks. Use when asked for Website Shower, website maintenance audit, cleanup checklist, duplicated types/constants, magic values, unused code, TypeScript hygiene, or read-only repo cleanup.
 ---
 
-# Types Constants Audit
+# Website Shower
 
-Audit TypeScript type and constant organization from repo evidence. Default mode is read-only: produce findings and recommendations, but do not edit files unless the user explicitly asks for fixes.
+Audit website maintenance issues from repo evidence. Default mode is read-only: produce findings and recommendations, but do not edit files unless the user explicitly asks for fixes.
 
-This skill is the first module of the broader Website Shower workflow. Website Shower coordinates multiple read-only website maintenance audits into a Markdown TODO report. The current stable module is types/constants ownership; unused-code scanning through `fallow` is being introduced as the next module.
+Website Shower coordinates multiple read-only website maintenance audits into a Markdown TODO report. Current modules cover types/constants ownership, unused-code leads, and TypeScript hygiene.
 
 ## Workflow
 
@@ -72,6 +72,14 @@ scripts/scan-website-shower.sh .
 
 Then use `references/audit-orchestrator.md` to convert scanner output into a checklist report.
 
+For TypeScript migration and escape-hatch leads, use:
+
+```bash
+scripts/scan-typescript-hygiene.sh .
+```
+
+Then apply `references/typescript-hygiene.md`.
+
 ## Core Judgment
 
 - Global only after two unrelated features need it.
@@ -94,6 +102,8 @@ Prioritize findings that reduce confusion:
 - store-derived types duplicated by hand-written aliases or interfaces
 - event payload contracts duplicated between hooks, slices, and services
 - repeated status/team/result unions that cross Redux, hooks, and UI
+- `any`, double casts, or suppression comments near repo-owned boundaries
+- JavaScript migration leftovers in typed source folders
 
 Skip low-value noise:
 - one-off JSX labels, route segments, HTTP method strings, and framework syntax

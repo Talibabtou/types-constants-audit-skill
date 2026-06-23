@@ -6,7 +6,7 @@ Read-only website cleanup audits for agents that need evidence before edits.
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Works with agents](https://img.shields.io/badge/agents-Codex%20%7C%20OpenCode%20%7C%20OpenClaw%20%7C%20Copilot%20%7C%20Cursor%20%7C%20Windsurf%20%7C%20Cline-lightgrey)
 
-**Website Shower** is a read-only website maintenance audit skill. The first stable module audits where types, literal unions, enum-like values, constants, and magic values live in a web repo. The second module adds unused-code leads through `fallow` when available, with a basic shell fallback.
+**Website Shower** is a read-only website maintenance audit skill. The first stable module audits where types, literal unions, enum-like values, constants, and magic values live in a web repo. The next modules add unused-code leads and TypeScript hygiene signals.
 
 The type and constants module helps an agent answer one practical question:
 
@@ -71,6 +71,12 @@ The unused-code module first looks for `fallow` in the audited repo's `node_modu
 
 ```bash
 FALLOW_USE_NPX=1 scripts/scan-unused-code.sh /path/to/repo
+```
+
+To inspect TypeScript migration and escape-hatch leads only:
+
+```bash
+scripts/scan-typescript-hygiene.sh /path/to/repo
 ```
 
 For monorepos, scan the root only for orientation, then narrow the target:
@@ -162,15 +168,18 @@ references/audit-heuristics.md   # signal vs noise rules
 references/audit-orchestrator.md # multi-module report coordination
 references/placement-rules.md    # inline/local/global/shared decision rules
 references/report-format.md      # finding and checklist format guidance
+references/typescript-hygiene.md # TypeScript migration and escape-hatch guidance
 references/unused-code.md        # fallow-backed unused-code audit guidance
 scripts/scan-types-constants.sh  # read-only scanner
 scripts/scan-unused-code.sh      # fallow-backed unused-code candidate scanner
+scripts/scan-typescript-hygiene.sh # TypeScript hygiene candidate scanner
 scripts/scan-website-shower.sh   # read-only multi-module scanner
 scripts/install-agent.sh         # copies/links agent adapters
 tests/smoke-test.sh              # fixture regression check
 examples/fixture/                # anonymous scanner fixture
 examples/website-shower-report.md # example checklist report
 docs/agent-portability.md        # compatibility notes
+docs/real-repo-validation-checklist.md # release feedback checklist
 ```
 
 ## Development

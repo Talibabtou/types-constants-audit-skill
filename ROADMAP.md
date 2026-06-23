@@ -69,15 +69,6 @@ These tasks decide whether the current skill is genuinely releasable. Do them be
   - license
 - [x] Tag `v0.1.0` after the release gate is complete.
 
-## Real Repo Validation
-
-- [x] Test on a small/clean Next.js app.
-- [x] Test on a feature-heavy React app.
-- [x] Test on a monorepo package.
-- [x] Optional before `v0.1.0`: test on a messy older repo with global `types.ts`.
-- [x] Record only behavior-changing misses or false positives.
-- [x] Stop changing placement rules after two different repos produce no new rule changes.
-
 ## Scope Guardrails
 
 - [ ] Do not add commands until separate workflows need separate entry points.
@@ -95,10 +86,9 @@ Working name: **Website Shower**. This should be an all-in-one read-only website
 - [x] Add read-only multi-module candidate scanner: `scripts/scan-website-shower.sh`.
 - [x] Add separate unused-code scanner: `scripts/scan-unused-code.sh`.
 - [x] Add unused-code guidance using `fallow`: `references/unused-code.md`.
-- [ ] Validate the `fallow` unused-code module on a real repo and record false positives.
 - [x] Convert multi-module scanner output into a first `examples/website-shower-report.md` checklist.
-- [ ] Validate the multi-module Website Shower report on a real repo and record misses or false positives.
-- [ ] TypeScript migration hygiene: `any`, unsafe casts, duplicate hand-written API types, weak `unknown` bridges, old JS migration leftovers.
+- [x] Add TypeScript migration hygiene module: `any`, unsafe casts, duplicate hand-written API types, weak `unknown` bridges, old JS migration leftovers.
+- [x] Extract real-repo feedback checklist into `docs/real-repo-validation-checklist.md`.
 - [ ] React and Next.js habit audit: server/client boundary drift, route constants, metadata duplication, cache/fetch option drift, prop type placement.
 - [ ] Tailwind cleanup audit: config drift, repeated arbitrary values, unused theme tokens, one-off utility patterns that should become design tokens, and class soup in shared components.
 - [ ] API contract hygiene: duplicated request/response shapes between routes, clients, hooks, schemas, and mocks.

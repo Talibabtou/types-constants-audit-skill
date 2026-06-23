@@ -1,7 +1,7 @@
 {
   "name": "types-constants-audit",
   "version": "0.1.0",
-  "description": "Read-only AI skill for auditing TypeScript type and constant drift.",
+  "description": "Read-only AI skill for website maintenance audits.",
   "keywords": [
     "ai-skill",
     "codex-skill",
@@ -11,6 +11,6 @@
   ],
   "license": "MIT",
   "scripts": {
-    "test": "bash -n scripts/scan-types-constants.sh && bash -n scripts/scan-unused-code.sh && bash -n scripts/scan-website-shower.sh && bash -n scripts/install-agent.sh && tests/smoke-test.sh"
+    "test": "bash -n scripts/scan-types-constants.sh && bash -n scripts/scan-unused-code.sh && bash -n scripts/scan-typescript-hygiene.sh && bash -n scripts/scan-website-shower.sh && bash -n scripts/install-agent.sh && tests/smoke-test.sh"
   }
 }

@@ -24,6 +24,9 @@ section "Types And Constants"
 section "Unused Code"
 "$ROOT/scripts/scan-unused-code.sh" "$TARGET"
 
+section "TypeScript Hygiene"
+"$ROOT/scripts/scan-typescript-hygiene.sh" "$TARGET"
+
 cat <<'NOTE'
 
 # Notes

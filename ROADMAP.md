@@ -69,13 +69,6 @@ These tasks decide whether the current skill is genuinely releasable. Do them be
   - license
 - [x] Tag `v0.1.0` after the release gate is complete.
 
-## Scope Guardrails
-
-- [ ] Do not add commands until separate workflows need separate entry points.
-- [ ] Do not add AST tooling until `rg` fails on a real validation task.
-- [ ] Keep every module read-only by default; scanner output is evidence, not an edit plan.
-- [ ] Add new audit areas one module at a time, with a scanner or manual workflow, fixture signal, report task, and real-repo validation.
-
 ## Phase Two: Website Maintenance And Code Hygiene
 
 Expand into a broader website maintenance skill in separate, testable modules. Each module should ship with its own scanner or manual workflow, fixture signal, report task, validation note, and optional command.
@@ -91,8 +84,10 @@ Working name: **Website Shower**. This should be an all-in-one read-only website
 - [x] Extract real-repo feedback checklist into `docs/real-repo-validation-checklist.md`.
 - [x] Add React and Next.js habit audit: server/client boundary drift, route constants, metadata duplication, cache/fetch option drift, prop type placement.
 - [x] Add Tailwind cleanup audit: config drift, repeated arbitrary values, unused theme tokens, one-off utility patterns that should become design tokens, and class soup in shared components.
-- [ ] API contract hygiene: duplicated request/response shapes between routes, clients, hooks, schemas, and mocks.
-- [ ] State and domain contract hygiene: duplicated store state, event payloads, selector return types, status machines, and action names.
+- [x] Add API contract hygiene: duplicated request/response shapes between routes, clients, hooks, schemas, and mocks.
+- [x] Reorder orchestrator audit flow.
+- [x] Add file tree hygiene audit: repo shape, app/package boundaries, feature folders, route layout, generated folders, junk drawers, misplaced files, and naming consistency.
+- [x] Add state and domain contract hygiene: duplicated store state, event payloads, selector return types, status machines, and action names.
 - [ ] Monorepo ownership hygiene: feature-private imports, premature shared packages, app-global junk drawers, and cross-package contract drift.
 - [ ] Generated-code boundary audit: generated files mixed with hand-written code, stale generated contracts, and missing ignore guidance.
 - [ ] Naming drift audit: same concept named `status`, `state`, `phase`, `mode`, `kind`, or `type` across different owners.
@@ -100,6 +95,22 @@ Working name: **Website Shower**. This should be an all-in-one read-only website
 
 ## Later
 
+- [ ] Dependency hygiene audit: unused dependencies, duplicate libraries with the same job, stale packages, mixed package managers, and wrong `dependencies` versus `devDependencies` placement.
+- [ ] Config hygiene audit: duplicated env handling, scattered app constants, checker ignore drift, and inconsistent Vite, Next.js, TypeScript, Biome, ESLint, or Prettier setup.
+- [ ] CSS and design-system hygiene audit beyond Tailwind: repeated colors, spacing, radius, typography, one-off CSS files, duplicated variants, and token candidates.
+- [ ] Component hygiene audit: oversized components, repeated UI patterns, props that should become variants, duplicated loading/error/empty states, and client components doing server work.
+- [ ] Data-fetching hygiene audit: repeated query keys, cache policy drift, duplicated fetch wrappers, mixed client/server fetching conventions, and missing validation around fetched data.
+- [ ] Test hygiene audit: dead tests, noisy snapshots, duplicated mocks, missing smoke tests around risky boundaries, and tests coupled to implementation details.
+- [ ] Accessibility hygiene audit: missing labels, button/link misuse, bad heading order, interactive non-buttons, and forms without clear names or errors.
+- [ ] Performance hygiene audit: needless `"use client"`, large client components, repeated dynamic imports, unoptimized images, oversized bundles, and unbounded rendered lists.
+- [ ] Light security hygiene audit: exposed env usage, unsafe HTML, weak route/auth checks, client-side secrets, and risky request handling. Keep this as leads only, not a full security review.
 - [ ] Add AST tooling only if real repos show `rg` cannot handle export usage, duplicate type shapes, literal unions, or enum-like objects cleanly.
 - [ ] Generate adapters from one canonical source if manual adapter sync becomes error-prone.
 - [ ] Run the Codex skill validator when available.
+
+## Scope Guardrails
+
+- [ ] Do not add commands until separate workflows need separate entry points.
+- [ ] Do not add AST tooling until `rg` fails on a real validation task.
+- [ ] Keep every module read-only by default; scanner output is evidence, not an edit plan.
+- [ ] Add new audit areas one module at a time, with a scanner or manual workflow, fixture signal, report task, and real-repo validation.

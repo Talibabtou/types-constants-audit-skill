@@ -42,26 +42,23 @@ FALLOW_USE_NPX=1 scripts/scan-unused-code.sh /path/to/repo
 - [ ] Run focused scanners when the full output is too large:
 
 ```bash
-scripts/scan-types-constants.sh /path/to/repo
+scripts/scan-file-tree-hygiene.sh /path/to/repo
 scripts/scan-typescript-hygiene.sh /path/to/repo
+scripts/scan-react-next-habits.sh /path/to/repo
+scripts/scan-api-contracts.sh /path/to/repo
+scripts/scan-state-domain-contracts.sh /path/to/repo
+scripts/scan-types-constants.sh /path/to/repo
 ```
 
 ## Module Checks
 
-### Types And Constants
+### File Tree Hygiene
 
-- [ ] Does the scanner find duplicated type/interface names worth inspecting?
-- [ ] Does it separate real domain literals from local UI strings?
-- [ ] Does it catch raw literals that bypass existing owners?
-- [ ] Does it avoid generated files, route handlers, and framework noise?
-- [ ] Does the final report cite exact file paths and line numbers?
-
-### Unused Code
-
-- [ ] Does `fallow` produce better leads than the fallback on this repo?
-- [ ] Does the fallback label its output as leads, not deletion proof?
-- [ ] Are framework entrypoints, config files, public exports, and dynamic imports handled as weak signals?
-- [ ] Did any stale helper, dependency, or export become a useful task?
+- [ ] Does it identify the real app, package, and feature boundaries?
+- [ ] Does it find mixed folder conventions such as `feature` and `features` without treating migration folders as automatic findings?
+- [ ] Does it separate framework-owned route folders from app-owned feature folders?
+- [ ] Does it surface junk drawers such as broad `lib`, `utils`, `shared`, or `common` folders?
+- [ ] Does it identify generated and build folders that later modules should treat carefully?
 
 ### TypeScript Hygiene
 
@@ -90,10 +87,39 @@ scripts/scan-typescript-hygiene.sh /path/to/repo
 - [ ] Does it flag dynamic class construction that Tailwind cannot detect reliably?
 - [ ] Does it surface repeated arbitrary values, duplicate utilities, and long class strings without treating every local class list as a finding?
 
+### API Contracts
+
+- [ ] Does it detect route handlers, Pages API routes, or plain fetch clients?
+- [ ] Does it find request body parsing without runtime validation?
+- [ ] Does it find duplicated request/response/payload types across routes, clients, mocks, schemas, or tests?
+- [ ] Does it respect generated OpenAPI, GraphQL, protobuf, or SDK output as a weak signal?
+- [ ] Does it recommend one clear owner instead of moving every API type to a global file?
+
+### State And Domain Contracts
+
+- [ ] Does it find the actual store, state, reducer, selector, event, and domain folders?
+- [ ] Does it separate store-derived `RootState` or `AppState` from hand-written duplicate state contracts?
+- [ ] Does it find event payloads that repeat across producer, consumer, worker, route, or reducer?
+- [ ] Does it find status machines repeated across store, UI, API client, and tests?
+- [ ] Does it avoid treating separate `loading`, `error`, or `pending` lifecycles as one shared owner?
+
+### Types And Constants
+
+- [ ] Does the scanner find duplicated type/interface names worth inspecting?
+- [ ] Does it separate real domain literals from local UI strings?
+- [ ] Does it catch raw literals that bypass existing owners?
+- [ ] Does it avoid generated files, route handlers, and framework noise?
+- [ ] Does the final report cite exact file paths and line numbers?
+
+### Unused Code
+
+- [ ] Does `fallow` produce better leads than the fallback on this repo?
+- [ ] Does the fallback label its output as leads, not deletion proof?
+- [ ] Are framework entrypoints, config files, public exports, and dynamic imports handled as weak signals?
+- [ ] Did any stale helper, dependency, or export become a useful task?
+
 ### Future Modules
 
-- [ ] API contracts: duplicated request/response shapes between routes, clients, hooks, schemas, and mocks.
-- [ ] State and domain contracts: duplicated store state, event payloads, selector return types, status machines, and action names.
 - [ ] Monorepo ownership: feature-private imports, premature shared packages, app-global junk drawers, and cross-package drift.
 - [ ] Generated-code boundary: generated files mixed with hand-written code, stale generated contracts, and missing ignore guidance.
 - [ ] Naming drift: same concept named `status`, `state`, `phase`, `mode`, `kind`, or `type` across owners.

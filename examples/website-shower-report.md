@@ -4,9 +4,9 @@ Fixture report generated from read-only scanner output. No audited files were ch
 
 ## Summary
 
-- Total tasks: 12
-- Safe first cleanup: `WS-004`
-- Needs human decision: `WS-003`, `WS-006`
+- Total tasks: 16
+- Safe first cleanup: `WS-016`
+- Needs human decision: `WS-001`, `WS-002`, `WS-013`, `WS-015`
 - Commands used:
 
 ```bash
@@ -15,94 +15,36 @@ MAX_SECTION_LINES=300 scripts/scan-website-shower.sh examples/fixture
 
 ## Cleanup Checklist
 
-- [ ] WS-001 Deduplicate `WorkItem`
-  Module: types-constants
-  Confidence: high
-  Files:
-  - `examples/fixture/src/state/contracts.ts:11`
-  - `examples/fixture/src/state/feature/workSlice.ts:3`
-  Why:
-  The state owner and state slice both declare the same item shape. The `side` and `status` fields can drift.
-  Safe action:
-  Keep `WorkItem` in `src/state/contracts.ts`, import it in `workSlice.ts`, and remove the local interface.
-  Validation:
-  Run the repo typecheck after import updates.
-  Permission: required
-
-- [ ] WS-002 Name and reuse `WorkStatus`
-  Module: types-constants
-  Confidence: high
-  Files:
-  - `examples/fixture/src/state/contracts.ts:14`
-  - `examples/fixture/src/state/feature/workSlice.ts:6`
-  Why:
-  `'queued' | 'done' | 'error'` appears in two item contracts and also drives filtering.
-  Safe action:
-  Add `export type WorkStatus = 'queued' | 'done' | 'error';` next to `WorkItem`, then use it from the owned contract.
-  Validation:
-  Run typecheck and confirm selectors still compare the same values.
-  Permission: required
-
-- [ ] WS-003 Consolidate preview worker messages
-  Module: types-constants
-  Confidence: high
-  Files:
-  - `examples/fixture/src/workers/previewWorker.ts:1`
-  - `examples/fixture/src/workers/previewWorker.ts:9`
-  - `examples/fixture/src/feature/usePreviewWorker.ts:1`
-  - `examples/fixture/src/feature/usePreviewWorker.ts:9`
-  Why:
-  Both sides of a worker-style message protocol declare request and response shapes independently.
-  Safe action:
-  Move `PreviewWorkerRequest` and `PreviewWorkerResponse` to a small worker contract file and import them from both sides.
-  Validation:
-  Run typecheck and manually confirm message strings are unchanged.
-  Permission: required
-
-- [ ] WS-004 Remove stale env helpers
-  Module: unused-code
+- [ ] WS-001 Choose one feature folder convention
+  Module: file-tree-hygiene
   Confidence: medium
   Files:
-  - `examples/fixture/src/config/env.ts:5`
-  - `examples/fixture/src/config/env.ts:7`
-  - `examples/fixture/src/config/env.ts:9`
-  Why:
-  The fallback unused-code scan found exported helpers that only appear at declaration. They are candidates, not proof.
-  Safe action:
-  If `rg` and the app entrypoints confirm no usage, delete `getLegacyApiUrl`, `getUnusedCallbackUrl`, and `buildPreviewUrl`.
-  Validation:
-  Run typecheck and the smallest app build command.
-  Permission: required
-
-- [ ] WS-005 Import `DomainEvent` from the owner
-  Module: types-constants
-  Confidence: high
-  Files:
-  - `examples/fixture/src/state/contracts.ts:17`
   - `examples/fixture/src/feature/consumeEvent.ts:1`
+  - `examples/fixture/src/features/items/navigation.ts:1`
   Why:
-  The consumer repeats the event payload owned by the state contract.
+  The repo has both `src/feature` and `src/features`. That can be a migration leftover, but it makes ownership harder to read before later audits judge API, type, and route placement.
   Safe action:
-  Delete the local `DomainEvent` interface in `consumeEvent.ts` and import the owned type.
+  Pick the repo convention before moving files. If `src/features` is the target, migrate only one owned slice at a time and update imports.
   Validation:
-  Run typecheck.
+  Run typecheck and a route smoke check after any import move.
   Permission: required
 
-- [ ] WS-006 Decide whether `ResourceMap` is shared production shape
-  Module: types-constants
+- [ ] WS-002 Decide the shared UI folder boundary
+  Module: file-tree-hygiene
   Confidence: medium
   Files:
-  - `examples/fixture/src/feature/sourceData.ts:1`
-  - `examples/fixture/src/feature/preloadData.ts:1`
+  - `examples/fixture/src/components/MetricCard.tsx:1`
+  - `examples/fixture/src/components/Panel.tsx:1`
+  - `examples/fixture/src/ui/control.ts:1`
   Why:
-  The shape repeats in nearby data helpers, but the owner depends on whether these files are generated, fixture-only, or production-owned.
+  The repo has both `src/components` and `src/ui`. That can be fine when one holds app components and the other holds primitives, but the boundary should be named clearly before Tailwind or component cleanup starts.
   Safe action:
-  If production-owned, move `ResourceMap` to the nearest feature model file. Otherwise leave it local.
+  Document or enforce the split. Move files only if both folders currently hold the same kind of shared UI primitive.
   Validation:
-  Check file ownership before editing.
+  Run typecheck and visually check affected components if files move.
   Permission: required
 
-- [ ] WS-007 Replace unsafe input escape hatch
+- [ ] WS-003 Replace unsafe input escape hatch
   Module: typescript-hygiene
   Confidence: medium
   Files:
@@ -116,7 +58,7 @@ MAX_SECTION_LINES=300 scripts/scan-website-shower.sh examples/fixture
   Run typecheck and add the smallest unit test if this boundary handles external input.
   Permission: required
 
-- [ ] WS-008 Add repeatable checker guardrails
+- [ ] WS-004 Add repeatable checker guardrails
   Module: typescript-hygiene
   Confidence: medium
   Files:
@@ -129,7 +71,7 @@ MAX_SECTION_LINES=300 scripts/scan-website-shower.sh examples/fixture
   Run the new scripts once and record any rule that must stay disabled during migration.
   Permission: required
 
-- [ ] WS-009 Split client behavior out of the route page
+- [ ] WS-005 Split client behavior out of the route page
   Module: react-next-habits
   Confidence: high
   Files:
@@ -144,7 +86,7 @@ MAX_SECTION_LINES=300 scripts/scan-website-shower.sh examples/fixture
   Run typecheck and the smallest Next build or route smoke check.
   Permission: required
 
-- [ ] WS-010 Name repeated item route literals
+- [ ] WS-006 Name repeated item route literals
   Module: react-next-habits
   Confidence: medium
   Files:
@@ -159,7 +101,7 @@ MAX_SECTION_LINES=300 scripts/scan-website-shower.sh examples/fixture
   Check generated links and route tests, if the repo has them.
   Permission: required
 
-- [ ] WS-011 Replace dynamic Tailwind class construction
+- [ ] WS-007 Replace dynamic Tailwind class construction
   Module: tailwind-cleanup
   Confidence: high
   Files:
@@ -172,7 +114,7 @@ MAX_SECTION_LINES=300 scripts/scan-website-shower.sh examples/fixture
   Run the app build or Tailwind build and inspect the component state that uses each variant.
   Permission: required
 
-- [ ] WS-012 Promote repeated arbitrary values to Tailwind tokens
+- [ ] WS-008 Promote repeated arbitrary values to Tailwind tokens
   Module: tailwind-cleanup
   Confidence: medium
   Files:
@@ -188,6 +130,123 @@ MAX_SECTION_LINES=300 scripts/scan-website-shower.sh examples/fixture
   Run the formatter and visual smoke check for the affected components.
   Permission: required
 
+- [ ] WS-009 Consolidate create-item API contracts
+  Module: api-contracts
+  Confidence: high
+  Files:
+  - `examples/fixture/src/app/api/items/route.ts:3`
+  - `examples/fixture/src/app/api/items/route.ts:8`
+  - `examples/fixture/src/features/items/api.ts:1`
+  - `examples/fixture/src/features/items/api.ts:6`
+  - `examples/fixture/src/features/items/mock.ts:1`
+  Why:
+  The route handler, client, and mock repeat the same request/response shape. These contracts can drift without TypeScript comparing them.
+  Safe action:
+  Move the request and response contract to an items API model or schema owner, then import it from the route, client, and mock.
+  Validation:
+  Run typecheck and one route/client test, or add a small contract test if none exists.
+  Permission: required
+
+- [ ] WS-010 Validate create-item request body before use
+  Module: api-contracts
+  Confidence: medium
+  Files:
+  - `examples/fixture/src/app/api/items/route.ts:16`
+  Why:
+  The route casts `request.json()` to `CreateItemRequest`. TypeScript does not validate external JSON at runtime.
+  Safe action:
+  Add a route-owned parser or schema validation step, then derive the request type from that schema if the repo uses a schema tool.
+  Validation:
+  Test a valid request and one invalid body.
+  Permission: required
+
+- [ ] WS-011 Deduplicate `WorkItem`
+  Module: state-domain-contracts
+  Confidence: high
+  Files:
+  - `examples/fixture/src/state/contracts.ts:11`
+  - `examples/fixture/src/state/feature/workSlice.ts:3`
+  Why:
+  The state owner and state slice both declare the same item shape. The `side` and `status` fields can drift.
+  Safe action:
+  Keep `WorkItem` in `src/state/contracts.ts`, import it in `workSlice.ts`, and remove the local interface.
+  Validation:
+  Run the repo typecheck after import updates.
+  Permission: required
+
+- [ ] WS-012 Name and reuse `WorkStatus`
+  Module: state-domain-contracts
+  Confidence: high
+  Files:
+  - `examples/fixture/src/state/contracts.ts:14`
+  - `examples/fixture/src/state/feature/workSlice.ts:6`
+  Why:
+  `'queued' | 'done' | 'error'` appears in two item contracts and also drives filtering.
+  Safe action:
+  Add `export type WorkStatus = 'queued' | 'done' | 'error';` next to `WorkItem`, then use it from the owned contract.
+  Validation:
+  Run typecheck and confirm selectors still compare the same values.
+  Permission: required
+
+- [ ] WS-013 Consolidate preview worker messages
+  Module: types-constants
+  Confidence: high
+  Files:
+  - `examples/fixture/src/workers/previewWorker.ts:1`
+  - `examples/fixture/src/workers/previewWorker.ts:9`
+  - `examples/fixture/src/feature/usePreviewWorker.ts:1`
+  - `examples/fixture/src/feature/usePreviewWorker.ts:9`
+  Why:
+  Both sides of a worker-style message protocol declare request and response shapes independently.
+  Safe action:
+  Move `PreviewWorkerRequest` and `PreviewWorkerResponse` to a small worker contract file and import them from both sides.
+  Validation:
+  Run typecheck and manually confirm message strings are unchanged.
+  Permission: required
+
+- [ ] WS-014 Import `DomainEvent` from the owner
+  Module: state-domain-contracts
+  Confidence: high
+  Files:
+  - `examples/fixture/src/state/contracts.ts:17`
+  - `examples/fixture/src/feature/consumeEvent.ts:1`
+  Why:
+  The consumer repeats the event payload owned by the state contract.
+  Safe action:
+  Delete the local `DomainEvent` interface in `consumeEvent.ts` and import the owned type.
+  Validation:
+  Run typecheck.
+  Permission: required
+
+- [ ] WS-015 Decide whether `ResourceMap` is shared production shape
+  Module: types-constants
+  Confidence: medium
+  Files:
+  - `examples/fixture/src/feature/sourceData.ts:1`
+  - `examples/fixture/src/feature/preloadData.ts:1`
+  Why:
+  The shape repeats in nearby data helpers, but the owner depends on whether these files are generated, fixture-only, or production-owned.
+  Safe action:
+  If production-owned, move `ResourceMap` to the nearest feature model file. Otherwise leave it local.
+  Validation:
+  Check file ownership before editing.
+  Permission: required
+
+- [ ] WS-016 Remove stale env helpers
+  Module: unused-code
+  Confidence: medium
+  Files:
+  - `examples/fixture/src/config/env.ts:5`
+  - `examples/fixture/src/config/env.ts:7`
+  - `examples/fixture/src/config/env.ts:9`
+  Why:
+  The fallback unused-code scan found exported helpers that only appear at declaration. They are candidates, not proof.
+  Safe action:
+  If `rg` and the app entrypoints confirm no usage, delete `getLegacyApiUrl`, `getUnusedCallbackUrl`, and `buildPreviewUrl`.
+  Validation:
+  Run typecheck and the smallest app build command.
+  Permission: required
+
 ## Leads Ignored
 
 - `default` in `src/ui/control.ts` is a local UI variant, not a domain constant.
@@ -197,3 +256,4 @@ MAX_SECTION_LINES=300 scripts/scan-website-shower.sh examples/fixture
 - Missing Biome, Prettier, and ESLint are one setup lead, not separate tasks. A repo should pick one formatter path and one lint path unless it has a reason to run more.
 - `metadata` in a single route file is normal. It becomes a task only when it is mixed with client behavior or repeated across routes without ownership.
 - One arbitrary value can stay inline. The report only promotes values that repeat or encode a shared visual decision.
+- Framework `Request`, `Response`, and `NextResponse` names are not contract duplicates by themselves.

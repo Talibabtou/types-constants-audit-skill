@@ -18,11 +18,8 @@ section "Website Shower Candidate Scan"
 printf 'Target: %s\n' "$TARGET"
 printf 'Mode: read-only candidate gathering\n'
 
-section "Types And Constants"
-"$ROOT/scripts/scan-types-constants.sh" "$TARGET"
-
-section "Unused Code"
-"$ROOT/scripts/scan-unused-code.sh" "$TARGET"
+section "File Tree Hygiene"
+"$ROOT/scripts/scan-file-tree-hygiene.sh" "$TARGET"
 
 section "TypeScript Hygiene"
 "$ROOT/scripts/scan-typescript-hygiene.sh" "$TARGET"
@@ -32,6 +29,18 @@ section "React And Next.js Habits"
 
 section "Tailwind Cleanup"
 "$ROOT/scripts/scan-tailwind-cleanup.sh" "$TARGET"
+
+section "API Contracts"
+"$ROOT/scripts/scan-api-contracts.sh" "$TARGET"
+
+section "State And Domain Contracts"
+"$ROOT/scripts/scan-state-domain-contracts.sh" "$TARGET"
+
+section "Types And Constants"
+"$ROOT/scripts/scan-types-constants.sh" "$TARGET"
+
+section "Unused Code"
+"$ROOT/scripts/scan-unused-code.sh" "$TARGET"
 
 cat <<'NOTE'
 

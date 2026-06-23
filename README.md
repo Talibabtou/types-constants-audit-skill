@@ -6,7 +6,7 @@ Read-only website cleanup audits for agents that need evidence before edits.
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Works with agents](https://img.shields.io/badge/agents-Codex%20%7C%20OpenCode%20%7C%20OpenClaw%20%7C%20Copilot%20%7C%20Cursor%20%7C%20Windsurf%20%7C%20Cline-lightgrey)
 
-**Website Shower** is a read-only website maintenance audit skill. The first stable module audits where types, literal unions, enum-like values, constants, and magic values live in a web repo. The next modules add unused-code leads and TypeScript hygiene signals.
+**Website Shower** is a read-only website maintenance audit skill. It starts with repo shape, then checks tooling, framework habits, styling, API contracts, state/domain contracts, type and constant ownership, and unused-code leads.
 
 The type and constants module helps an agent answer one practical question:
 
@@ -55,16 +55,16 @@ Full example: [`examples/website-shower-report.md`](examples/website-shower-repo
 
 ## Quick Start
 
-From this repo:
-
-```bash
-scripts/scan-types-constants.sh /path/to/repo
-```
-
-To gather candidates from all currently available modules:
+From this repo, gather candidates from all available modules:
 
 ```bash
 scripts/scan-website-shower.sh /path/to/repo
+```
+
+To inspect file-tree hygiene only:
+
+```bash
+scripts/scan-file-tree-hygiene.sh /path/to/repo
 ```
 
 The unused-code module first looks for `fallow` in the audited repo's `node_modules/.bin`, then for a globally available `fallow`. If unavailable, it falls back to a simpler `rg` scan for exported symbols to usage-check. To allow `npx` resolution, run:
@@ -89,6 +89,18 @@ To inspect Tailwind cleanup leads only:
 
 ```bash
 scripts/scan-tailwind-cleanup.sh /path/to/repo
+```
+
+To inspect API contract leads only:
+
+```bash
+scripts/scan-api-contracts.sh /path/to/repo
+```
+
+To inspect state and domain contract leads only:
+
+```bash
+scripts/scan-state-domain-contracts.sh /path/to/repo
 ```
 
 For monorepos, scan the root only for orientation, then narrow the target:
@@ -177,20 +189,27 @@ opencode.json                    # OpenCode project config
 .kiro/steering/                  # Kiro steering rule
 .agents/rules/                   # generic agent rule
 references/audit-heuristics.md   # signal vs noise rules
+references/api-contracts.md      # API contract hygiene guidance
 references/audit-orchestrator.md # multi-module report coordination
+references/file-tree-hygiene.md  # repo shape and ownership-boundary guidance
 references/placement-rules.md    # inline/local/global/shared decision rules
 references/report-format.md      # finding and checklist format guidance
 references/react-next-habits.md  # React and Next.js habit guidance
+references/state-domain-contracts.md # state and domain contract guidance
 references/tailwind-cleanup.md   # Tailwind cleanup guidance
 references/typescript-hygiene.md # TypeScript migration and escape-hatch guidance
 references/unused-code.md        # fallow-backed unused-code audit guidance
-scripts/scan-types-constants.sh  # read-only scanner
+scripts/scan-file-tree-hygiene.sh # repo shape candidate scanner
+scripts/scan-types-constants.sh  # type and constant candidate scanner
+scripts/scan-api-contracts.sh    # API contract candidate scanner
 scripts/scan-react-next-habits.sh # React and Next.js candidate scanner
+scripts/scan-state-domain-contracts.sh # state and domain candidate scanner
 scripts/scan-tailwind-cleanup.sh # Tailwind cleanup candidate scanner
 scripts/scan-unused-code.sh      # fallow-backed unused-code candidate scanner
 scripts/scan-typescript-hygiene.sh # TypeScript hygiene candidate scanner
 scripts/scan-website-shower.sh   # read-only multi-module scanner
 scripts/install-agent.sh         # copies/links agent adapters
+scripts/README.md                # script order and module notes
 tests/smoke-test.sh              # fixture regression check
 examples/fixture/                # anonymous scanner fixture
 examples/website-shower-report.md # example checklist report

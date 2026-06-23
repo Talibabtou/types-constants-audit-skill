@@ -4,19 +4,25 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 OUTPUT="$(mktemp "${TMPDIR:-/tmp}/types-constants-smoke.XXXXXX")"
+FILE_TREE_OUTPUT="$(mktemp "${TMPDIR:-/tmp}/website-shower-file-tree-smoke.XXXXXX")"
 UNUSED_OUTPUT="$(mktemp "${TMPDIR:-/tmp}/website-shower-unused-smoke.XXXXXX")"
 TS_OUTPUT="$(mktemp "${TMPDIR:-/tmp}/website-shower-ts-smoke.XXXXXX")"
 REACT_OUTPUT="$(mktemp "${TMPDIR:-/tmp}/website-shower-react-smoke.XXXXXX")"
 TAILWIND_OUTPUT="$(mktemp "${TMPDIR:-/tmp}/website-shower-tailwind-smoke.XXXXXX")"
+API_OUTPUT="$(mktemp "${TMPDIR:-/tmp}/website-shower-api-smoke.XXXXXX")"
+STATE_OUTPUT="$(mktemp "${TMPDIR:-/tmp}/website-shower-state-smoke.XXXXXX")"
 SHOWER_OUTPUT="$(mktemp "${TMPDIR:-/tmp}/website-shower-smoke.XXXXXX")"
 REPORT="$ROOT/examples/website-shower-report.md"
-trap 'rm -f "$OUTPUT" "$UNUSED_OUTPUT" "$TS_OUTPUT" "$REACT_OUTPUT" "$TAILWIND_OUTPUT" "$SHOWER_OUTPUT"' EXIT
+trap 'rm -f "$OUTPUT" "$FILE_TREE_OUTPUT" "$UNUSED_OUTPUT" "$TS_OUTPUT" "$REACT_OUTPUT" "$TAILWIND_OUTPUT" "$API_OUTPUT" "$STATE_OUTPUT" "$SHOWER_OUTPUT"' EXIT
 
 "$ROOT/scripts/scan-types-constants.sh" "$ROOT/examples/fixture" > "$OUTPUT"
+"$ROOT/scripts/scan-file-tree-hygiene.sh" "$ROOT/examples/fixture" > "$FILE_TREE_OUTPUT"
 "$ROOT/scripts/scan-unused-code.sh" "$ROOT/examples/fixture" > "$UNUSED_OUTPUT"
 "$ROOT/scripts/scan-typescript-hygiene.sh" "$ROOT/examples/fixture" > "$TS_OUTPUT"
 "$ROOT/scripts/scan-react-next-habits.sh" "$ROOT/examples/fixture" > "$REACT_OUTPUT"
 "$ROOT/scripts/scan-tailwind-cleanup.sh" "$ROOT/examples/fixture" > "$TAILWIND_OUTPUT"
+"$ROOT/scripts/scan-api-contracts.sh" "$ROOT/examples/fixture" > "$API_OUTPUT"
+"$ROOT/scripts/scan-state-domain-contracts.sh" "$ROOT/examples/fixture" > "$STATE_OUTPUT"
 MAX_SECTION_LINES=10 "$ROOT/scripts/scan-website-shower.sh" "$ROOT/examples/fixture" > "$SHOWER_OUTPUT"
 
 assert_contains() {
@@ -28,6 +34,12 @@ assert_contains() {
     cat "$file" >&2
     exit 1
   fi
+}
+
+section_line() {
+  local pattern="$1"
+  local file="$2"
+  rg --line-number --fixed-strings "$pattern" "$file" | head -n 1 | cut -d: -f1
 }
 
 assert_contains "== Target =="
@@ -58,6 +70,20 @@ assert_contains "DomainEvent appears"
 assert_contains "ResourceMap appears"
 assert_contains "PreviewWorkerRequest appears"
 assert_contains "PreviewWorkerResponse appears"
+
+assert_contains "== Root signals ==" "$FILE_TREE_OUTPUT"
+assert_contains "package.json" "$FILE_TREE_OUTPUT"
+assert_contains "== App and package layout ==" "$FILE_TREE_OUTPUT"
+assert_contains "src/app" "$FILE_TREE_OUTPUT"
+assert_contains "== Feature boundary leads ==" "$FILE_TREE_OUTPUT"
+assert_contains "src/feature" "$FILE_TREE_OUTPUT"
+assert_contains "src/features" "$FILE_TREE_OUTPUT"
+assert_contains "mixed feature folders" "$FILE_TREE_OUTPUT"
+assert_contains "src/components" "$FILE_TREE_OUTPUT"
+assert_contains "src/ui" "$FILE_TREE_OUTPUT"
+assert_contains "mixed UI folders" "$FILE_TREE_OUTPUT"
+assert_contains "== Route layout leads ==" "$FILE_TREE_OUTPUT"
+assert_contains "app/items/page.tsx" "$FILE_TREE_OUTPUT"
 
 assert_contains "== Target ==" "$UNUSED_OUTPUT"
 assert_contains "examples/fixture" "$UNUSED_OUTPUT"
@@ -107,24 +133,71 @@ assert_contains 'bg-${tone}-600' "$TAILWIND_OUTPUT"
 assert_contains "== Duplicate utility leads ==" "$TAILWIND_OUTPUT"
 assert_contains "px-4 px-4" "$TAILWIND_OUTPUT"
 
+assert_contains "== API signals ==" "$API_OUTPUT"
+assert_contains "src/app/api" "$API_OUTPUT"
+assert_contains "== Route handler files ==" "$API_OUTPUT"
+assert_contains "app/api/items/route.ts" "$API_OUTPUT"
+assert_contains "== Request body parsing ==" "$API_OUTPUT"
+assert_contains "request.json" "$API_OUTPUT"
+assert_contains "== API contract type names ==" "$API_OUTPUT"
+assert_contains "CreateItemRequest" "$API_OUTPUT"
+assert_contains "CreateItemResponse" "$API_OUTPUT"
+
+assert_contains "== State and domain signals ==" "$STATE_OUTPUT"
+assert_contains "src/state" "$STATE_OUTPUT"
+assert_contains "src/features" "$STATE_OUTPUT"
+assert_contains "== Store, slice, and reducer files ==" "$STATE_OUTPUT"
+assert_contains "workSlice.ts" "$STATE_OUTPUT"
+assert_contains "== State contract type names ==" "$STATE_OUTPUT"
+assert_contains "AppState" "$STATE_OUTPUT"
+assert_contains "DomainEvent" "$STATE_OUTPUT"
+assert_contains "== State creators and selectors ==" "$STATE_OUTPUT"
+assert_contains "selectQueuedItems" "$STATE_OUTPUT"
+assert_contains "== Status machine literal leads ==" "$STATE_OUTPUT"
+assert_contains "'queued'" "$STATE_OUTPUT"
+assert_contains "== Repeated state/domain type names ==" "$STATE_OUTPUT"
+assert_contains "DomainEvent appears" "$STATE_OUTPUT"
+
 assert_contains "# Website Shower Candidate Scan" "$SHOWER_OUTPUT"
+assert_contains "# File Tree Hygiene" "$SHOWER_OUTPUT"
 assert_contains "# Types And Constants" "$SHOWER_OUTPUT"
 assert_contains "# Unused Code" "$SHOWER_OUTPUT"
 assert_contains "# TypeScript Hygiene" "$SHOWER_OUTPUT"
 assert_contains "# React And Next.js Habits" "$SHOWER_OUTPUT"
 assert_contains "# Tailwind Cleanup" "$SHOWER_OUTPUT"
+assert_contains "# API Contracts" "$SHOWER_OUTPUT"
+assert_contains "# State And Domain Contracts" "$SHOWER_OUTPUT"
 assert_contains "This orchestrator gathers module outputs only." "$SHOWER_OUTPUT"
 
+file_tree_line="$(section_line "# File Tree Hygiene" "$SHOWER_OUTPUT")"
+typescript_line="$(section_line "# TypeScript Hygiene" "$SHOWER_OUTPUT")"
+state_line="$(section_line "# State And Domain Contracts" "$SHOWER_OUTPUT")"
+types_constants_line="$(section_line "# Types And Constants" "$SHOWER_OUTPUT")"
+if [ "$file_tree_line" -ge "$typescript_line" ]; then
+  echo "file-tree hygiene should run before TypeScript hygiene" >&2
+  cat "$SHOWER_OUTPUT" >&2
+  exit 1
+fi
+if [ "$state_line" -ge "$types_constants_line" ]; then
+  echo "state/domain contracts should run before types/constants" >&2
+  cat "$SHOWER_OUTPUT" >&2
+  exit 1
+fi
+
 assert_contains "# Website Shower Report" "$REPORT"
-assert_contains "WS-001 Deduplicate" "$REPORT"
-assert_contains "WS-003 Consolidate preview worker messages" "$REPORT"
-assert_contains "WS-004 Remove stale env helpers" "$REPORT"
-assert_contains "WS-007 Replace unsafe input escape hatch" "$REPORT"
-assert_contains "WS-008 Add repeatable checker guardrails" "$REPORT"
-assert_contains "WS-009 Split client behavior out of the route page" "$REPORT"
-assert_contains "WS-010 Name repeated item route literals" "$REPORT"
-assert_contains "WS-011 Replace dynamic Tailwind class construction" "$REPORT"
-assert_contains "WS-012 Promote repeated arbitrary values" "$REPORT"
+assert_contains "WS-001 Choose one feature folder convention" "$REPORT"
+assert_contains "WS-002 Decide the shared UI folder boundary" "$REPORT"
+assert_contains "WS-003 Replace unsafe input escape hatch" "$REPORT"
+assert_contains "WS-004 Add repeatable checker guardrails" "$REPORT"
+assert_contains "WS-005 Split client behavior out of the route page" "$REPORT"
+assert_contains "WS-006 Name repeated item route literals" "$REPORT"
+assert_contains "WS-007 Replace dynamic Tailwind class construction" "$REPORT"
+assert_contains "WS-008 Promote repeated arbitrary values" "$REPORT"
+assert_contains "WS-009 Consolidate create-item API contracts" "$REPORT"
+assert_contains "WS-010 Validate create-item request body" "$REPORT"
+assert_contains "WS-011 Deduplicate" "$REPORT"
+assert_contains "WS-013 Consolidate preview worker messages" "$REPORT"
+assert_contains "WS-016 Remove stale env helpers" "$REPORT"
 assert_contains "No audited files were changed." "$REPORT"
 
 echo "smoke test ok"

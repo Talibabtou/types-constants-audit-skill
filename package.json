@@ -1,0 +1,16 @@
+{
+  "name": "types-constants-audit",
+  "version": "0.1.0",
+  "description": "Read-only AI skill for auditing TypeScript type and constant drift.",
+  "keywords": [
+    "ai-skill",
+    "codex-skill",
+    "typescript",
+    "code-maintenance",
+    "repo-hygiene"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "test": "bash -n scripts/scan-types-constants.sh && tests/smoke-test.sh"
+  }
+}

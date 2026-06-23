@@ -19,18 +19,24 @@ Goal: help an agent find TypeScript type and constant organization issues, then 
 - [x] Filter checked-in generated TypeScript declaration and IDL-style files from scanner output.
 - [x] Cap noisy scanner sections with `MAX_SECTION_LINES`.
 - [x] Add a tiny anonymized fixture repo under `examples/fixture/`.
-- [x] Add a script smoke test that asserts key scanner sections appear.
+- [x] Add `tests/smoke-test.sh` that asserts key scanner sections appear.
 - [x] Smoke test the scanner on this repo.
 - [x] Test on clean repo `portfolio`; use it to calibrate false positives.
 - [x] Test on feature-oriented repo `demos-cratos`; use it to calibrate feature-local ownership.
 - [x] Test on massive monorepo `demos-cratos/monorepo`; use it to add monorepo scoping guidance.
 - [x] Add lightweight cross-agent compatibility entry points.
+- [x] Add MIT `LICENSE`.
+- [x] Add `package.json` version metadata and `npm test`.
+- [x] Add agent portability docs and instruction adapters for Cursor, Windsurf, Cline, Kiro, Copilot, `.agents`, and `AGENTS.md`.
+- [x] Add OpenCode compatibility through `opencode.json` and `.opencode/`.
+- [x] Add OpenClaw compatibility through `.openclaw/skills/types-constants-audit/`.
+- [x] Move smoke testing into `tests/`.
+- [x] Add example markdown under `examples/`.
 
 ## Next
 
-- [ ] Add `LICENSE`.
-- [ ] Add one anonymized before/after audit report in `examples/`.
-- [ ] Add a short GitHub-ready badge/header section once the repo has a first release.
+- [ ] Replace the starter anonymized audit report with a richer before/after report from validation.
+- [ ] Add a short release note template for `v0.1.0`.
 - [ ] Run one full manual audit report using scanner output.
 - [ ] Confirm the skill can produce 5-15 useful findings without editing files.
 
@@ -43,10 +49,24 @@ Goal: help an agent find TypeScript type and constant organization issues, then 
 - [ ] Record only behavior-changing misses or false positives.
 - [ ] Stop changing placement rules after two different repos produce no new rule changes.
 
+## Phase Two: Website Maintenance And Code Hygiene
+
+Keep v0.1 focused on type and constant drift. After v0.1 is released, expand into a broader website maintenance skill in separate, testable modules:
+
+- [ ] Unused code and stale export workflow, likely using `fallow` as a companion tool instead of rebuilding dead-code analysis.
+- [ ] TypeScript migration hygiene: `any`, unsafe casts, duplicate hand-written API types, weak `unknown` bridges, old JS migration leftovers.
+- [ ] React and Next.js habit audit: server/client boundary drift, route constants, metadata duplication, cache/fetch option drift, prop type placement.
+- [ ] Tailwind cleanup audit: config drift, repeated arbitrary values, unused theme tokens, one-off utility patterns that should become design tokens, and class soup in shared components.
+- [ ] API contract hygiene: duplicated request/response shapes between routes, clients, hooks, schemas, and mocks.
+- [ ] State and domain contract hygiene: duplicated store state, event payloads, selector return types, status machines, and action names.
+- [ ] Monorepo ownership hygiene: feature-private imports, premature shared packages, app-global junk drawers, and cross-package contract drift.
+- [ ] Generated-code boundary audit: generated files mixed with hand-written code, stale generated contracts, and missing ignore guidance.
+- [ ] Naming drift audit: same concept named `status`, `state`, `phase`, `mode`, `kind`, or `type` across different owners.
+- [ ] Add command workflows only when there are distinct modes, for example `.opencode/command/audit-types.md`, `.opencode/command/audit-tailwind.md`, and `.opencode/command/audit-unused.md`.
+
 ## Later
 
-- [ ] Add `package.json` only if we introduce Node-based validation or generated compatibility files.
 - [ ] Add AST tooling only if real repos show `rg` cannot handle export usage, duplicate type shapes, literal unions, or enum-like objects cleanly.
-- [ ] Add generated adapters for specific agents only after the canonical `SKILL.md` stabilizes.
+- [ ] Generate adapters from one canonical source if manual adapter sync becomes error-prone.
 - [ ] Run the Codex skill validator when available.
 - [ ] Create a versioned release tag.

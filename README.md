@@ -2,6 +2,10 @@
 
 Find TypeScript type and constant drift before it turns into a habit.
 
+![Version](https://img.shields.io/badge/version-0.1.0-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Works with agents](https://img.shields.io/badge/agents-Codex%20%7C%20OpenCode%20%7C%20OpenClaw%20%7C%20Copilot%20%7C%20Cursor%20%7C%20Windsurf%20%7C%20Cline-lightgrey)
+
 `types-constants-audit` is a read-only agent skill for auditing where types, literal unions, enum-like values, constants, and magic values live in a web repo. It helps an agent answer one practical question:
 
 > Should this contract be inline, feature-local, app-global, shared, or deleted?
@@ -60,22 +64,43 @@ Audit this repo for duplicated types, scattered constants, magic literals, stale
 
 This repo is instruction-first, so it also works in agents that can read Markdown rules.
 
-- **Claude / Cursor / Windsurf / Cline**: paste or attach `SKILL.md`; include `references/` when the audit needs stronger placement judgment.
+- **Claude**: paste or attach `SKILL.md`; include `references/` when the audit needs stronger placement judgment.
+- **OpenCode**: use `opencode.json`, which loads `.opencode/instructions/types-constants-audit.md`.
+- **OpenClaw**: install `.openclaw/skills/types-constants-audit` as the skill package; see `.openclaw/README.md`.
 - **GitHub Copilot**: use `.github/copilot-instructions.md` as the portable instruction entry.
+- **Cursor**: use `.cursor/rules/types-constants-audit.mdc`.
+- **Windsurf**: use `.windsurf/rules/types-constants-audit.md`.
+- **Cline**: use `.clinerules/types-constants-audit.md`.
+- **Kiro**: use `.kiro/steering/types-constants-audit.md`.
 - **Agents that read `AGENTS.md`**: run from this repo root or copy `AGENTS.md` into the project that should load the audit behavior.
+- **Agents that read `.agents/rules/`**: use `.agents/rules/types-constants-audit.md`.
 - **Any shell-capable agent**: run `scripts/scan-types-constants.sh` and then inspect usage manually before reporting.
+
+See `docs/agent-portability.md` for the adapter map.
 
 ## Repo Layout
 
 ```text
 SKILL.md                         # Codex skill entry point
 agents/openai.yaml               # Codex UI metadata
+AGENTS.md                        # portable root instructions
+opencode.json                    # OpenCode project config
+.opencode/                       # OpenCode instructions and future commands
+.openclaw/skills/                # OpenClaw skill package
+.github/copilot-instructions.md  # GitHub Copilot instructions
+.cursor/rules/                   # Cursor project rule
+.windsurf/rules/                 # Windsurf project rule
+.clinerules/                     # Cline project rule
+.kiro/steering/                  # Kiro steering rule
+.agents/rules/                   # generic agent rule
 references/audit-heuristics.md   # signal vs noise rules
 references/placement-rules.md    # inline/local/global/shared decision rules
 references/report-format.md      # finding format and severity guidance
 scripts/scan-types-constants.sh  # read-only scanner
-scripts/smoke-test.sh            # fixture regression check
+tests/smoke-test.sh              # fixture regression check
 examples/fixture/                # anonymous scanner fixture
+examples/audit-report.md         # example read-only report
+docs/agent-portability.md        # compatibility notes
 ```
 
 ## Development
@@ -83,8 +108,19 @@ examples/fixture/                # anonymous scanner fixture
 Run the smoke test after changing the scanner or fixture:
 
 ```bash
-bash -n scripts/scan-types-constants.sh
-scripts/smoke-test.sh
+npm test
 ```
 
 The next quality bar is one anonymized before/after audit report showing how scanner output becomes actual findings.
+
+Custom command folders are intentionally not shipped yet. The current skill has one primary action, so `SKILL.md` plus the scanner is clearer. Commands become useful in phase two when there are distinct workflows like `/audit-types`, `/audit-tailwind`, `/audit-unused`, or `/audit-next-habits`.
+
+## Release
+
+This repo uses semantic versions in `package.json`.
+
+- Patch: documentation, adapter, and scanner bug fixes.
+- Minor: new audit capability.
+- Major: behavior or report format changes that break existing workflows.
+
+Release by updating `package.json`, tagging `vX.Y.Z`, and publishing GitHub release notes with the tested agent adapters.

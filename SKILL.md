@@ -120,5 +120,5 @@ Do not introduce a new shared file if an existing local owner is clearer.
 Use `examples/fixture` for scanner smoke testing only. It intentionally uses anonymous names so agents are not biased by product vocabulary.
 
 ```bash
-scripts/smoke-test.sh
+tests/smoke-test.sh
 ```

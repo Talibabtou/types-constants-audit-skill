@@ -29,6 +29,23 @@ The skill ships with a small Bash scanner so agents can quickly map candidate fi
 - It does not treat scanner output as findings.
 - It does not modify example repos during validation.
 
+## Example Output
+
+Full example: [`examples/audit-report.md`](examples/audit-report.md)
+
+```md
+1. Duplicated type: `WorkItem`
+   Severity: medium
+   Confidence: high
+
+   Current:
+   - `examples/fixture/src/state/contracts.ts:11`
+   - `examples/fixture/src/state/feature/workSlice.ts:3`
+
+   Recommendation:
+   Keep `WorkItem` in `src/state/contracts.ts` and import it from the feature slice.
+```
+
 ## Quick Start
 
 From this repo:
@@ -54,11 +71,40 @@ Clone this repo into your Codex skills directory:
 git clone https://github.com/Talibabtou/types-constants-audit.git ~/.codex/skills/types-constants-audit
 ```
 
+Or, from a checkout of this repo:
+
+```bash
+scripts/install-agent.sh codex
+```
+
 Then ask:
 
 ```text
 Audit this repo for duplicated types, scattered constants, magic literals, stale exports, and bad global/local placement. Produce findings only; do not edit files.
 ```
+
+## Install For Other Agents
+
+From a checkout of this repo:
+
+```bash
+# Project-local adapters
+scripts/install-agent.sh cursor /path/to/project
+scripts/install-agent.sh windsurf /path/to/project
+scripts/install-agent.sh cline /path/to/project
+scripts/install-agent.sh kiro /path/to/project
+scripts/install-agent.sh copilot /path/to/project
+scripts/install-agent.sh agents /path/to/project
+scripts/install-agent.sh opencode /path/to/project
+
+# Skill-directory adapter
+scripts/install-agent.sh openclaw
+
+# Copy all project-local instruction adapters
+scripts/install-agent.sh all-local /path/to/project
+```
+
+Until this repo has marketplace/plugin distribution, the installer copies or links the instruction files each host already understands. See `docs/agent-portability.md` for the file map.
 
 ## Other Agents
 
@@ -97,9 +143,11 @@ references/audit-heuristics.md   # signal vs noise rules
 references/placement-rules.md    # inline/local/global/shared decision rules
 references/report-format.md      # finding format and severity guidance
 scripts/scan-types-constants.sh  # read-only scanner
+scripts/install-agent.sh         # copies/links agent adapters
 tests/smoke-test.sh              # fixture regression check
 examples/fixture/                # anonymous scanner fixture
 examples/audit-report.md         # example read-only report
+examples/report-template.md      # reusable report skeleton
 docs/agent-portability.md        # compatibility notes
 ```
 

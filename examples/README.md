@@ -4,5 +4,6 @@ This directory contains small, anonymous examples for validating and demonstrati
 
 - `fixture/` is a tiny repo used by the smoke test.
 - `audit-report.md` shows how scanner output should become a concise read-only audit report.
+- `report-template.md` is the reusable report skeleton.
 
 Examples must stay product-neutral. Avoid real project names, user names, private routes, and branded vocabulary.

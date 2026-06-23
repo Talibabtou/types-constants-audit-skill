@@ -30,28 +30,62 @@ Goal: help an agent find TypeScript type and constant organization issues, then 
 - [x] Add agent portability docs and instruction adapters for Cursor, Windsurf, Cline, Kiro, Copilot, `.agents`, and `AGENTS.md`.
 - [x] Add OpenCode compatibility through `opencode.json` and `.opencode/`.
 - [x] Add OpenClaw compatibility through `.openclaw/skills/types-constants-audit/`.
+- [x] Add `scripts/install-agent.sh` for local agent adapter installation.
 - [x] Move smoke testing into `tests/`.
 - [x] Add example markdown under `examples/`.
+- [x] Add a reusable report template in `examples/report-template.md`.
+- [x] Add a first anonymized example report in `examples/audit-report.md`.
 
-## Next
+## Release Gate: v0.1.0
 
-- [ ] Replace the starter anonymized audit report with a richer before/after report from validation.
-- [ ] Add a short release note template for `v0.1.0`.
-- [ ] Run one full manual audit report using scanner output.
-- [ ] Confirm the skill can produce 5-15 useful findings without editing files.
+These tasks decide whether the current skill is genuinely releasable. Do them before adding any phase-two capability.
+
+- [x] Upgrade `examples/audit-report.md` into a richer before/after-style report:
+  - show scanner signals before judgment
+  - show final findings after judgment
+  - include ignored leads and why they were ignored
+  - keep all names anonymous
+  - keep the report read-only; no audited files are modified
+- [x] Run one full manual validation audit from scanner output.
+- [x] Confirm the skill can produce 5-15 useful findings or leads without editing files.
+- [x] Record validation outcome in `examples/validation-notes.md`:
+  - target shape
+  - command used
+  - number of findings
+  - false positives ignored
+  - misses or rule changes discovered
+- [x] Add `docs/release-notes-v0.1.0.md` only after validation is recorded.
+- [ ] Install the skill in Codex and run real-repo validation from the installed skill.
+- [x] Run `npm test`.
+- [ ] Review the public repo surface for release:
+  - `README.md`
+  - `SKILL.md`
+  - `AGENTS.md`
+  - agent adapters
+  - examples
+  - tests
+  - license
+- [ ] Tag `v0.1.0` after the release gate is complete.
 
 ## Real Repo Validation
 
 - [x] Test on a small/clean Next.js app.
 - [x] Test on a feature-heavy React app.
 - [x] Test on a monorepo package.
-- [ ] Test on a messy older repo with global `types.ts`.
+- [ ] Optional before `v0.1.0`: test on a messy older repo with global `types.ts`.
 - [ ] Record only behavior-changing misses or false positives.
 - [ ] Stop changing placement rules after two different repos produce no new rule changes.
 
+## Scope Guardrails
+
+- [ ] Do not add commands until there are at least two real workflows.
+- [ ] Do not add AST tooling until `rg` fails on a real validation task.
+- [ ] Do not add Tailwind, React/Next, unused-code, or TypeScript-migration audits before `v0.1.0`.
+- [ ] Do not turn the current skill into a generic cleanup skill until the type/constant audit is release-quality.
+
 ## Phase Two: Website Maintenance And Code Hygiene
 
-Keep v0.1 focused on type and constant drift. After v0.1 is released, expand into a broader website maintenance skill in separate, testable modules:
+Keep v0.1 focused on type and constant drift. After v0.1 is released, expand into a broader website maintenance skill in separate, testable modules. Each module should ship with its own scanner or workflow, example report, validation notes, and optional command.
 
 - [ ] Unused code and stale export workflow, likely using `fallow` as a companion tool instead of rebuilding dead-code analysis.
 - [ ] TypeScript migration hygiene: `any`, unsafe casts, duplicate hand-written API types, weak `unknown` bridges, old JS migration leftovers.
@@ -69,4 +103,3 @@ Keep v0.1 focused on type and constant drift. After v0.1 is released, expand int
 - [ ] Add AST tooling only if real repos show `rg` cannot handle export usage, duplicate type shapes, literal unions, or enum-like objects cleanly.
 - [ ] Generate adapters from one canonical source if manual adapter sync becomes error-prone.
 - [ ] Run the Codex skill validator when available.
-- [ ] Create a versioned release tag.

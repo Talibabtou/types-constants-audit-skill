@@ -6,16 +6,26 @@
 
 | Host | Files | Notes |
 | --- | --- | --- |
-| Codex skill | `SKILL.md`, `agents/openai.yaml`, `references/`, `scripts/` | Full skill behavior with scanner and progressive references. |
-| Codex / OpenCode / CodeWhale style agents | `AGENTS.md` | Root project instructions. |
-| OpenCode | `opencode.json`, `.opencode/instructions/types-constants-audit.md` | Root config loads the OpenCode-specific instruction adapter. Commands are deferred until there are multiple workflows. |
-| OpenClaw | `.openclaw/skills/types-constants-audit/SKILL.md` | Install the directory as an OpenClaw skill package. The root `SKILL.md` remains canonical for this repo. |
-| GitHub Copilot | `.github/copilot-instructions.md` | Repository instruction file. |
-| Cursor | `.cursor/rules/types-constants-audit.mdc` | Project rule. |
-| Windsurf | `.windsurf/rules/types-constants-audit.md` | Project rule. |
-| Cline | `.clinerules/types-constants-audit.md` | Project rule. |
-| Kiro | `.kiro/steering/types-constants-audit.md` | Steering rule. |
+| Codex skill | `SKILL.md`, `agents/openai.yaml`, `references/`, `scripts/` | Run `scripts/install-agent.sh codex` or clone into `~/.codex/skills/types-constants-audit`. |
+| Codex / CodeWhale style agents | `AGENTS.md` | Run `scripts/install-agent.sh agents <project>`. |
+| OpenCode | `opencode.json`, `.opencode/instructions/types-constants-audit.md` | Run `scripts/install-agent.sh opencode <project>`. Commands are deferred until there are multiple workflows. |
+| OpenClaw | `.openclaw/skills/types-constants-audit/SKILL.md` | Run `scripts/install-agent.sh openclaw`. The root `SKILL.md` remains canonical for this repo. |
+| GitHub Copilot | `.github/copilot-instructions.md` | Run `scripts/install-agent.sh copilot <project>`. |
+| Cursor | `.cursor/rules/types-constants-audit.mdc` | Run `scripts/install-agent.sh cursor <project>`. |
+| Windsurf | `.windsurf/rules/types-constants-audit.md` | Run `scripts/install-agent.sh windsurf <project>`. |
+| Cline | `.clinerules/types-constants-audit.md` | Run `scripts/install-agent.sh cline <project>`. |
+| Kiro | `.kiro/steering/types-constants-audit.md` | Run `scripts/install-agent.sh kiro <project>`. |
 | Generic agents | `SKILL.md` or `AGENTS.md` | Copy the compact rule file or load the full skill. |
+
+## Installer
+
+From a checkout of this repo:
+
+```bash
+scripts/install-agent.sh --help
+```
+
+The installer copies project-local instruction adapters into a target project. For Codex it links this repo into the local skill directory. For OpenClaw it copies the OpenClaw skill package into `~/.openclaw/skills/`.
 
 ## Adapter Rule
 

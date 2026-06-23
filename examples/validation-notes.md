@@ -41,3 +41,30 @@ MAX_SECTION_LINES=80 scripts/scan-types-constants.sh examples/fixture
 - No scanner changes required from this fixture validation.
 - The example confirms the report should explicitly separate scanner leads from final findings.
 - Real-repo validation is still needed after installing the skill in Codex to verify trigger behavior and adapter loading.
+
+## Installed Codex Skill Validation
+
+Validated after installing the skill in Codex and running it against a feature-oriented TypeScript website.
+
+Outcome:
+
+- Findings produced: 4
+- Files modified in audited target: 0
+- Overall result: useful, appropriately read-only, and not overly noisy
+
+Findings produced:
+
+1. Wrong owner constant used for a same-value database status.
+2. Runtime arrays duplicated with hand-written type unions.
+3. Raw role/status literals bypassing existing owner constants.
+4. Small app-global `types.ts` ownership drawer importing feature constants.
+
+False positives or caution points:
+
+- Same literal value does not always mean same owner. A note status and a note-change-request status can both contain `"approved"` while belonging to different database enums.
+- Next.js route paths like `src/app/[locale]/...` must be quoted in shell commands to avoid zsh globbing.
+
+Rule changes from validation:
+
+- Added heuristic for same literal value with different DB/table/lifecycle owner.
+- Added shell-safety guidance for bracketed paths.

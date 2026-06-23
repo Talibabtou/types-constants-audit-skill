@@ -55,7 +55,7 @@ These tasks decide whether the current skill is genuinely releasable. Do them be
   - false positives ignored
   - misses or rule changes discovered
 - [x] Add `docs/release-notes-v0.1.0.md` only after validation is recorded.
-- [ ] Install the skill in Codex and run real-repo validation from the installed skill.
+- [x] Install the skill in Codex and run real-repo validation from the installed skill.
 - [x] Run `npm test`.
 - [ ] Review the public repo surface for release:
   - `README.md`

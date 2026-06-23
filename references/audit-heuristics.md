@@ -7,6 +7,7 @@ Use these rules to turn scanner output into findings. Scanner output is evidence
 - Same literal union repeated across unrelated runtime paths.
 - Same type shape duplicated between store, hooks, services, or API clients.
 - Existing owner constant or union exists, but related code still compares raw strings.
+- Same literal value is reused through the wrong owner constant, especially when database enums or table lifecycles differ.
 - Exported symbol is unused outside its declaration file.
 - Global `types.ts` or `constants.ts` mixes unrelated domain ownership.
 - Same primitive value appears under matching semantic names, such as two `CACHE_CONTROL` constants.
@@ -37,3 +38,21 @@ Do not report a root-wide repeated name or literal from spelling alone.
 Report findings and next actions. Do not edit the audited repo unless the user explicitly asks for fixes.
 
 When testing the skill on example repos, do not modify the example repos.
+
+## Shell Safety
+
+Quote paths that contain shell-special characters. This matters in Next.js repos where route groups or segments include brackets, such as `src/app/[locale]/profile/page.tsx`.
+
+Good:
+
+```bash
+rg "SymbolName" 'src/app/[locale]/profile/page.tsx'
+```
+
+Bad:
+
+```bash
+rg "SymbolName" src/app/[locale]/profile/page.tsx
+```
+
+If a command fails because of shell globbing, rerun it quoted and mention that the failure was command syntax only.

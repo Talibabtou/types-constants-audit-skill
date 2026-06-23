@@ -16,6 +16,7 @@ Initial release of `types-constants-audit`.
 ## Validation
 
 - Fixture validation produced 5 findings/leads without editing files.
+- Installed Codex skill validation on a feature-oriented TypeScript website produced 4 useful read-only findings.
 - Tested previously on a clean Next.js app, a feature-heavy React app, and a large monorepo during development.
 - `npm test` passes.
 
@@ -23,6 +24,7 @@ Initial release of `types-constants-audit`.
 
 - The scanner prints candidates only; agents must inspect usage before reporting findings.
 - The default workflow is read-only.
+- Same literal values can still need separate owner constants when database enums, tables, or lifecycle ownership differ.
 - Phase-two website maintenance audits are intentionally out of scope for this release.
 
 ## Install

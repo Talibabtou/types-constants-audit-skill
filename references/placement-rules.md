@@ -97,6 +97,8 @@ export const NOTE_STATUSES = ["draft", "published"] as const
 export type NoteStatus = (typeof NOTE_STATUSES)[number]
 ```
 
+Do not reuse an enum-like constant just because the string values match. If two database enums, tables, API resources, or lifecycle owners use the same literal, keep separate owner constants and derive separate types.
+
 ## Stale Exports
 
 If exported symbol has no usage outside its own declaration file:

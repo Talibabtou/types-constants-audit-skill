@@ -47,6 +47,8 @@ rg "\\bSymbolName\\b" .
 rg "from ['\"].*(types|constants|enums)" .
 ```
 
+Quote paths with shell-special characters when inspecting files directly, especially Next.js routes such as `'src/app/[locale]/profile/page.tsx'`.
+
 5. Classify each issue:
    - duplicated type shape
    - duplicated literal union
@@ -68,6 +70,7 @@ rg "from ['\"].*(types|constants|enums)" .
 - Delete stale exports before moving code.
 - Repeated names, literals, and primitive values are leads, not findings. Confirm shape, ownership, and usage.
 - Raw literals are strongest when the repo already has an owning constant or union and nearby code drifts from it.
+- Same literal value can still need separate constants when ownership differs, for example two database enums that both include `"approved"` but belong to different tables or lifecycles.
 
 ## What To Report
 
